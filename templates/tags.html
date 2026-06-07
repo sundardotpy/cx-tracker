@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="bg-zinc-950 border border-zinc-800 p-6 rounded-xl h-fit shadow-2xl">
+        <h2 class="text-lg font-bold text-white mb-4 tracking-tight">Create System Tag</h2>
+        <form action="/admin/tags" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-[11px] uppercase font-bold text-zinc-500 mb-1.5 tracking-wider">Tag Label Name</label>
+                <input type="text" name="tag_name" placeholder="e.g., Payment Fail" required autocomplete="off" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#05a54b] transition">
+            </div>
+            <button type="submit" class="w-full bg-[#05a54b] text-white font-semibold py-2 rounded-lg text-xs hover:opacity-90 transition">
+                Save Classification
+            </button>
+        </form>
+    </div>
+
+    <div class="md:col-span-2 bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-zinc-800">
+            <h2 class="text-sm font-bold uppercase text-zinc-400 tracking-wider">Active Database Classifications</h2>
+        </div>
+        <div class="divide-y divide-zinc-800 max-h-[500px] overflow-y-auto">
+            {% if tags %}
+                {% for tag in tags %}
+                <div class="px-6 py-3.5 flex justify-between items-center hover:bg-zinc-900/20">
+                    <span class="text-sm text-zinc-200 font-medium">{{ tag['name'] }}</span>
+                    <a href="/admin/tags/delete/{{ tag['id'] }}" class="text-xs text-zinc-500 hover:text-red-400 px-2 py-1 border border-zinc-800 hover:border-red-950/50 rounded transition" onclick="return confirm('Delete this tag definition permanently?')">
+                        Delete
+                    </a>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="p-8 text-center text-zinc-600 text-xs italic">
+                No active categorization tokens defined in DB.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

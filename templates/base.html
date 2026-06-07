@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CX Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-zinc-100 min-h-screen font-sans antialiased">
+    <nav class="border-b border-zinc-800 bg-zinc-950 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <div class="w-3 h-3 rounded-full bg-[#05a54b]"></div>
+            <a href="/" class="text-lg font-bold tracking-tight text-white">CX<span class="text-[#05a54b]">Tracker</span></a>
+        </div>
+        <div class="flex items-center space-x-3">
+            {% if session.get('logged_in') %}
+                <a href="/admin/tags" class="text-xs text-zinc-400 hover:text-white px-2 py-2 transition">Manage Tags</a>
+                <a href="/admin/queue" class="text-xs text-zinc-400 hover:text-white px-2 py-2 relative transition">
+                    Queue 
+                    {% if queue_count and queue_count > 0 %}
+                    <span class="ml-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded text-[10px] font-bold">{{ queue_count }}</span>
+                    {% endif %}
+                </a>
+                <a href="/add-entry" class="text-xs bg-zinc-900 border border-zinc-700 hover:border-[#05a54b] text-zinc-300 px-3 py-2 rounded-lg font-medium transition">Create Entry</a>
+                <a href="/logout" class="text-xs text-zinc-500 hover:text-zinc-300 transition pl-2">Logout</a>
+            {% else %}
+                <a href="/submit-issue" class="text-xs bg-[#05a54b] text-white font-semibold px-4 py-2 rounded-lg tracking-wide transition hover:opacity-90">Submit Issue</a>
+                <a href="/login" class="text-xs border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 px-4 py-2 rounded-lg transition">Admin Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-6">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="bg-zinc-900 border-l-2 border-[#05a54b] text-sm text-zinc-300 p-3 mb-6 rounded-r">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

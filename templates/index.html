@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-white tracking-tight">CX Process Dashboard</h1>
+        <p class="text-xs text-zinc-500 mt-1">CX Process issues & bugs.</p>
+    </div>
+    {% if session.get('logged_in') %}
+    <div>
+        <a href="/admin/export-csv" class="inline-flex items-center text-xs bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 hover:border-zinc-700 px-4 py-2 rounded-lg font-medium transition shadow-sm">
+            Download CSV
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Filter Box -->
+<form method="GET" action="/" class="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3 bg-zinc-950 p-4 border border-zinc-800 rounded-xl">
+    <div class="sm:col-span-2">
+        <input type="text" name="q" value="{{ search_query }}" placeholder="Search short description..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#05a54b] placeholder-zinc-600 transition">
+    </div>
+    <div class="flex gap-2">
+        <select name="tag" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-300 focus:outline-none focus:border-[#05a54b] transition">
+            <option value="">All Tags</option>
+            {% for tag in tags %}
+            <option value="{{ tag['name'] }}" {% if selected_tag == tag['name'] %}selected{% endif %}>{{ tag['name'] }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="bg-[#05a54b] hover:opacity-90 text-white px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition">Apply</button>
+        {% if search_query or selected_tag %}
+        <a href="/" class="bg-zinc-900 border border-zinc-800 text-zinc-400 px-3 py-2 rounded-lg text-xs flex items-center transition">Reset</a>
+        {% endif %}
+    </div>
+</form>
+
+<div class="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-2xl">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="border-b border-zinc-800 text-zinc-500 text-[11px] font-bold uppercase tracking-wider bg-zinc-900/40">
+                    <th class="py-4 px-6">Issue Type Tag</th>
+                    <th class="py-4 px-6">Short Description</th>
+                    <th class="py-4 px-6">Scope</th>
+                    <th class="py-4 px-6">Slack Thread</th>
+                    <th class="py-4 px-6">Temporary Resolution</th>
+                    <th class="py-4 px-6 text-center">Status</th>
+                    {% if session.get('logged_in') %}
+                    <th class="py-4 px-6 text-right">Actions</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-800/50 text-sm">
+                {% if issues %}
+                    {% for issue in issues %}
+                    <tr class="hover:bg-zinc-900/10 transition-colors">
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-zinc-900 border border-zinc-700 text-zinc-300 max-w-[220px] truncate" title="{{ issue['issue_type'] }}">
+                                {{ issue['issue_type'] }}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-zinc-300 font-light max-w-xs break-words leading-relaxed">{{ issue['description'] }}</td>
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium {% if issue['scope'] == 'Internal' %}bg-blue-500/10 text-blue-400 border border-blue-500/20{% else %}bg-purple-500/10 text-purple-400 border border-purple-500/20{% endif %}">
+                                {{ issue['scope'] }}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            {% if issue['slack_link'] %}
+                            <a href="{{ issue['slack_link'] }}" target="_blank" class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition">Open Slack</a>
+                            {% else %}
+                            <span class="text-zinc-600 text-xs italic">No Link</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-4 px-6 text-zinc-400 font-light max-w-sm break-words leading-relaxed">{{ issue['temp_solution'] }}</td>
+                        <td class="py-4 px-6 text-center whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if issue['is_fixed'] %}bg-[#05a54b]/10 border border-[#05a54b]/30 text-[#05a54b]{% else %}bg-amber-500/10 border border-amber-500/20 text-amber-400{% endif %}">
+                                {% if issue['is_fixed'] %}Fixed{% else %}Not Fixed{% endif %}
+                            </span>
+                        </td>
+                        {% if session.get('logged_in') %}
+                        <td class="py-4 px-6 text-right text-xs space-x-1 whitespace-nowrap">
+                            <a href="/toggle_fixed/{{ issue['id'] }}" class="text-zinc-400 hover:text-white border border-zinc-800 px-2.5 py-1 rounded transition">Toggle Status</a>
+                            <a href="/delete_issue/{{ issue['id'] }}" class="text-red-400 hover:text-red-300 border border-zinc-800 px-2.5 py-1 rounded transition" onclick="return confirm('Remove entry?')">Delete</a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="7" class="py-16 text-center text-zinc-600 font-light text-sm">No operational records match your selection.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

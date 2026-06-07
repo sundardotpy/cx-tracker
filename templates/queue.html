@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-white tracking-tight">Incoming Submission Queue</h1>
+    <p class="text-xs text-zinc-500 mt-1">Review, approve, or reject open community-submitted issue metrics.</p>
+</div>
+
+<div class="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-2xl">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="border-b border-zinc-800 text-zinc-500 text-[11px] font-bold uppercase tracking-wider bg-zinc-900/40">
+                    <th class="py-4 px-6">Requested Tag</th>
+                    <th class="py-4 px-6">Description</th>
+                    <th class="py-4 px-6">Scope</th>
+                    <th class="py-4 px-6">Temporary Resolution</th>
+                    <th class="py-4 px-6 text-right">Moderation Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-800/50 text-sm">
+                {% if issues %}
+                    {% for issue in issues %}
+                    <tr class="hover:bg-zinc-900/10 transition-colors">
+                        <td class="py-4 px-6 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-zinc-900 border border-zinc-700 text-zinc-300">
+                                {{ issue['issue_type'] }}
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-zinc-300 font-light max-w-xs break-words">{{ issue['description'] }}</td>
+                        <td class="py-4 px-6 whitespace-nowrap text-zinc-400">{{ issue['scope'] }}</td>
+                        <td class="py-4 px-6 text-zinc-400 font-light max-w-xs break-words">{{ issue['temp_solution'] }}</td>
+                        <td class="py-4 px-6 text-right text-xs space-x-2 whitespace-nowrap">
+                            <a href="/admin/approve/{{ issue['id'] }}" class="bg-[#05a54b]/10 text-[#05a54b] border border-[#05a54b]/30 hover:bg-[#05a54b] hover:text-white px-3 py-1.5 rounded-lg font-medium transition">
+                                Accept
+                            </a>
+                            <a href="/admin/reject/{{ issue['id'] }}" class="bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-red-950 hover:text-red-400 px-3 py-1.5 rounded-lg font-medium transition" onclick="return confirm('Reject submission?')">
+                                Reject
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="5" class="py-16 text-center text-zinc-600 font-light text-sm">Review queue is empty. No pending submissions found.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

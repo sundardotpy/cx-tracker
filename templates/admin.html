@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto bg-zinc-950 border border-zinc-800 p-8 rounded-xl shadow-2xl">
+    <h2 class="text-xl font-bold text-white mb-6 tracking-tight">Log CX Process Issue / Bug</h2>
+    
+    <form action="/add-entry" method="POST" class="space-y-5">
+        <div>
+            <label class="block text-[11px] uppercase font-bold text-zinc-500 mb-1.5 tracking-wider">Issue Type Classification</label>
+            <select name="issue_type" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#05a54b] transition">
+                <option value="" disabled selected>Select Tag Label...</option>
+                {% for tag in tags %}
+                <option value="{{ tag['name'] }}">{{ tag['name'] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label class="block text-[11px] uppercase font-bold text-zinc-500 mb-1.5 tracking-wider">Short Description</label>
+            <textarea name="description" rows="2" maxlength="450" placeholder="Briefly describe the bug or process failure..." required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#05a54b] transition"></textarea>
+        </div>
+
+        <div>
+            <label class="block text-[11px] uppercase font-bold text-zinc-500 mb-1.5 tracking-wider">Temporary Resolution / Workaround</label>
+            <textarea name="temp_solution" rows="4" placeholder="What should the team do manually to fix this for now?..." required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#05a54b] transition"></textarea>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-[11px] uppercase font-bold text-zinc-500 mb-1.5 tracking-wider">Scope</label>
+                <select name="scope" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#05a54b] transition">
+                    <option value="Internal">Internal</option>
+                    <option value="External">External</option>
+                </select>
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-[11px] uppercase font-bold text-zinc-500 mb-1.5 tracking-wider">Slack Connection Link</label>
+                <input type="url" name="slack_link" placeholder="https://slack.com/archives/..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#05a54b] transition">
+            </div>
+        </div>
+
+        <div class="flex items-center">
+            <input id="is_fixed" name="is_fixed" type="checkbox" class="h-4 w-4 rounded border-zinc-800 bg-zinc-900 text-[#05a54b] focus:ring-0">
+            <label for="is_fixed" class="ml-2 block text-xs font-medium text-zinc-400">Mark issue as fixed instantly</label>
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-4 border-t border-zinc-800">
+            <a href="/" class="px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white transition mt-1.5">Discard</a>
+            <button type="submit" class="px-5 py-2 text-xs font-semibold bg-[#05a54b] text-white rounded-lg hover:opacity-90 transition">
+                Publish Entry
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
