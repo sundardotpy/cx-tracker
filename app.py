@@ -6,12 +6,15 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 
+# Load environment variables from .env file (used for local testing)
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = 'super_secret_key_for_cx_tracker'
 
-# Initialize Supabase Client
+# Production best practice: read secret key from environment variables, or use fallback
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "super_secret_key_for_cx_tracker")
+
+# Initialize Supabase Client using environment variables
 url = os.environ.get("SUPABASE_URL")
 key = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
@@ -192,4 +195,6 @@ def delete_issue(issue_id):
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True,port=6969)
+    # Cloud providers inject a PORT variable. We read that or fall back to 6969 locally.
+    port_number = int(os.environ.get("PORT", 6969))
+    app.run(host='0.0.0.0', port=port_number, debug=False)
